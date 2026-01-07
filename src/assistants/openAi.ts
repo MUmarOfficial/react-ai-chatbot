@@ -8,7 +8,7 @@ const openai = new OpenAI({
 export class OpenAiAssistant {
   private readonly model: string;
 
-  constructor(model = "gpt-5-nano") {
+  constructor(model = "gpt-5") {
     this.model = model;
   }
 
@@ -23,6 +23,26 @@ export class OpenAiAssistant {
       });
 
       return result.choices[0].message.content || "";
+    } catch (error) {
+      console.error("AI Open AI Assistant Error:", error);
+      throw error;
+    }
+  }
+
+  async *chatStream(
+    content: string,
+    history: OpenAI.Chat.ChatCompletionMessageParam[]
+  ) {
+    try {
+      const result = await openai.chat.completions.create({
+        model: this.model,
+        messages: [...history, { role: "user", content }],
+        stream: true,
+      });
+
+      for await (const event of result) {
+        yield event.choices[0].delta?.content || "";
+      }
     } catch (error) {
       console.error("AI Open AI Assistant Error:", error);
       throw error;

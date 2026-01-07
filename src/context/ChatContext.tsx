@@ -1,15 +1,17 @@
-import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode, useCallback, useMemo } from "react";
 import { GoogleAiAssistant } from "../assistants/googleAi";
 
-export type Message = {
+const googleAi = new GoogleAiAssistant();
+
+type Message = {
     role: "user" | "assistant";
     content: string;
 };
 
 type ChatContextType = {
     messages: Message[];
-    addMessage: (content: string) => void;
     isTyping: boolean;
+    addMessage: (content: string) => Promise<void>;
 };
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -18,38 +20,44 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isTyping, setIsTyping] = useState(false);
 
-    const assistant = useMemo(() => new GoogleAiAssistant(), []);
-
     const addMessage = useCallback(async (content: string) => {
-        const userMsg: Message = { role: "user", content };
-        setMessages((prev) => [...prev, userMsg]);
+        if (!content.trim()) return;
 
+        setMessages((prev) => [...prev, { role: "user", content }]);
         setIsTyping(true);
 
         try {
-            const responseText = await assistant.chat(content);
+            setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
-            const aiMsg: Message = { role: "assistant", content: responseText };
-            setMessages((prev) => [...prev, aiMsg]);
+            await googleAi.chatStream(content, (chunk) => {
+                setMessages((prev) => {
+                    const newMessages = [...prev];
+
+                    const lastMsg = newMessages.at(-1);
+
+                    if (lastMsg?.role === "assistant") {
+                        lastMsg.content += chunk;
+                    }
+                    return newMessages;
+                });
+            });
+
         } catch (error) {
-            console.error("ChatContext Error:", error);
-            setMessages((prev) => [
-                ...prev,
-                { role: "assistant", content: "⚠️ Sorry, I encountered an error." }
-            ]);
+            console.error("Chat Error:", error);
+            setMessages((prev) => [...prev, { role: "assistant", content: "⚠️ Something went wrong. Please try again." }]);
         } finally {
             setIsTyping(false);
         }
-    }, [assistant, messages]);
+    }, []);
 
-    const value = useMemo(() => ({
+    const contextValue = useMemo(() => ({
         messages,
-        addMessage,
-        isTyping
-    }), [messages, addMessage, isTyping]);
+        isTyping,
+        addMessage
+    }), [messages, isTyping, addMessage]);
 
     return (
-        <ChatContext.Provider value={value}>
+        <ChatContext.Provider value={contextValue}>
             {children}
         </ChatContext.Provider>
     );
@@ -58,8 +66,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 // eslint-disable-next-line react-refresh/only-export-components
 export const useChat = () => {
     const context = useContext(ChatContext);
-    if (!context) {
-        throw new Error("useChat must be used within a ChatProvider");
-    }
+    if (!context) throw new Error("useChat must be used within a ChatProvider");
     return context;
 };
