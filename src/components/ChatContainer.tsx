@@ -1,42 +1,71 @@
 import { useEffect, useRef } from "react";
 import Chat from "./Chat";
 import { useChat } from "../context/ChatContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ChatContainer = () => {
     const { messages, isTyping } = useChat();
     const bottomRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: "smooth" });
+        }
     }, [messages, isTyping]);
 
     return (
-        <section className="flex-1 overflow-y-auto p-4 space-y-6">
-            {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-slate-500 opacity-80">
-                    <div className="bg-slate-800 p-4 rounded-full mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-8">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                        </svg>
-                    </div>
-                    <p className="text-lg font-medium">No messages yet</p>
-                    <p className="text-sm">Type something below to start chatting.</p>
-                </div>
-            ) : (
-                messages.map((msg, index) => (
-                    <Chat key={index} role={msg.role} content={msg.content} />
-                ))
-            )}
+        <section
+            ref={containerRef}
+            className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth custom-scrollbar relative"
+        >
+            <AnimatePresence mode="popLayout">
+                {messages.length === 0 ? (
+                    <motion.div
+                        key="hero"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute inset-0 flex flex-col items-center justify-center z-0 pointer-events-none"
+                    >
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-white/5 rounded-full blur-[100px]" />
+                            <h1 className="relative text-8xl md:text-9xl font-bold tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white via-white/80 to-white/20 select-none">
+                                Chatbot
+                            </h1>
+                        </div>
+                        <p className="mt-8 text-white/40 text-lg font-light tracking-wide">
+                            Ask something challenging.
+                        </p>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="list"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="max-w-3xl mx-auto space-y-6 pb-4"
+                    >
+                        {messages.map((msg, index) => (
+                            <Chat key={index} role={msg.role} content={msg.content} />
+                        ))}
 
-            {isTyping && (
-                <div className="flex justify-start">
-                    <div className="bg-slate-800 text-slate-400 px-4 py-3 rounded-2xl rounded-tl-sm text-sm animate-pulse">
-                        AI is typing...
-                    </div>
-                </div>
-            )}
-
-            <div ref={bottomRef} />
+                        {isTyping && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex items-center gap-3 ml-2"
+                            >
+                                <div className="size-8 rounded-lg bg-transparent border border-white/10 flex items-center justify-center">
+                                    <div className="size-2 bg-blue-500 rounded-full animate-pulse" />
+                                </div>
+                                <span className="text-white/40 text-sm font-light">Thinking...</span>
+                            </motion.div>
+                        )}
+                        <div ref={bottomRef} className="h-1" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     );
 };

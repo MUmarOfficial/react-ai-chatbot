@@ -1,6 +1,6 @@
-import type { ChatMessage } from "../App";
+import type { Message } from "../context/ChatContext";
 
-export const DUMMYMESSAGES: ChatMessage[] = [
+export const DUMMYMESSAGES: Message[] = [
   {
     role: "user",
     content: "Hello, how are you?",
@@ -19,7 +19,7 @@ export const DUMMYMESSAGES: ChatMessage[] = [
   },
 ];
 
-export const WELCOMEMESSAGE: ChatMessage = {
+export const WELCOMEMESSAGE: Message = {
   role: "assistant",
   content: "Hey, how I can help you today?",
 };

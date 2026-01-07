@@ -1,8 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { createContext, useContext, useState, type ReactNode } from "react";
-
-const apiKey = import.meta.env.VITE_GOOGLE_API_KEY || "";
-const genAI = new GoogleGenerativeAI(apiKey);
+import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from "react";
+import { GoogleAiAssistant } from "../assistants/googleAi";
 
 export type Message = {
     role: "user" | "assistant";
@@ -21,35 +18,38 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isTyping, setIsTyping] = useState(false);
 
-    const addMessage = async (content: string) => {
+    const assistant = useMemo(() => new GoogleAiAssistant(), []);
+
+    const addMessage = useCallback(async (content: string) => {
         const userMsg: Message = { role: "user", content };
         setMessages((prev) => [...prev, userMsg]);
 
         setIsTyping(true);
 
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            const responseText = await assistant.chat(content);
 
-            const result = await model.generateContent(content);
-            const response = await result.response;
-            const text = response.text();
-
-            const aiMsg: Message = { role: "assistant", content: text };
+            const aiMsg: Message = { role: "assistant", content: responseText };
             setMessages((prev) => [...prev, aiMsg]);
         } catch (error) {
-            console.error("Error generating response:", error);
-
+            console.error("ChatContext Error:", error);
             setMessages((prev) => [
                 ...prev,
-                { role: "assistant", content: "⚠️ Sorry, I encountered an error. Please check your API key." }
+                { role: "assistant", content: "⚠️ Sorry, I encountered an error." }
             ]);
         } finally {
             setIsTyping(false);
         }
-    };
+    }, [assistant, messages]);
+
+    const value = useMemo(() => ({
+        messages,
+        addMessage,
+        isTyping
+    }), [messages, addMessage, isTyping]);
 
     return (
-        <ChatContext.Provider value={{ messages, addMessage, isTyping }}>
+        <ChatContext.Provider value={value}>
             {children}
         </ChatContext.Provider>
     );

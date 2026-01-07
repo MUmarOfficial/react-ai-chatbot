@@ -1,13 +1,16 @@
 const Header = () => {
     return (
-        <header className="shrink-0 border-b border-slate-800 bg-[#0f172a] p-4">
-            <div className="flex items-center justify-center gap-3">
-                <div className="size-8 rounded-lg flex items-center justify-center">
-                    <img src="/chatbotLogo.png" alt="Logo" />
+        <header className="shrink-0 py-4 px-6 flex items-center justify-between bg-transparent">
+            <div className="flex items-center gap-3 group cursor-pointer">
+                <div className="relative flex items-center justify-center size-10">
+                    <div className="absolute inset-0 bg-white/10 rounded-xl blur-sm group-hover:blur-md transition-all duration-500" />
+                    <div className="relative bg-black/50 border border-white/10 rounded-xl p-2 backdrop-blur-md">
+                        <img src="/chatbotLogo.png" className="size-5 text-white" alt="logo"/>
+                    </div>
                 </div>
-                <h1 className="text-lg font-semibold text-slate-200 tracking-wide">
+                <span className="text-xl font-medium tracking-tight text-white/90 font-sans">
                     AI Chatbot
-                </h1>
+                </span>
             </div>
         </header>
     );
