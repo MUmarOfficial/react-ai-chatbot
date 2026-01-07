@@ -1,12 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
+import { type AiAssistant } from "../interfaces/ai";
 
-// Define the shape of a message for the Gemini SDK
 type Message = {
   role: "user" | "model";
   parts: { text: string }[];
 };
 
-export class GoogleAiAssistant {
+export class GoogleAiAssistant implements AiAssistant {
   private readonly ai: GoogleGenAI;
   private readonly model: string;
   private readonly history: Message[] = [];
@@ -23,30 +23,27 @@ export class GoogleAiAssistant {
     onChunk: (chunk: string) => void
   ): Promise<void> {
     try {
-      const userMessage: Message = { role: "user", parts: [{ text: content }] };
-      this.history.push(userMessage);
+      this.history.push({ role: "user", parts: [{ text: content }] });
 
       const response = await this.ai.models.generateContentStream({
         model: this.model,
         contents: this.history,
       });
 
-      let fullResponseText = "";
+      let fullResponse = "";
 
       for await (const chunk of response) {
-        const chunkText = chunk.text;
-        if (chunkText) {
-          fullResponseText += chunkText;
-          onChunk(chunkText);
+        const text = chunk.text;
+        if (text) {
+          fullResponse += text;
+          onChunk(text);
         }
       }
 
-      this.history.push({
-        role: "model",
-        parts: [{ text: fullResponseText }],
-      });
+      this.history.push({ role: "model", parts: [{ text: fullResponse }] });
     } catch (error) {
-      console.error("AI Google AI Assistant Error:", error);
+      console.error("Google AI Error:", error);
+      onChunk("\n\n[System Error: Connection to Gemini failed]");
       throw error;
     }
   }

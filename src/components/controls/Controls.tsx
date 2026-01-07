@@ -14,10 +14,7 @@ const Controls = () => {
         if (!inputVal.trim() || isTyping) return;
         addMessage(inputVal);
         setInputVal("");
-
-        if (textAreaRef.current) {
-            textAreaRef.current.style.height = "auto";
-        }
+        if (textAreaRef.current) textAreaRef.current.style.height = "auto";
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -37,11 +34,9 @@ const Controls = () => {
                 className="max-w-3xl mx-auto relative backdrop-blur-xl border rounded-2xl overflow-hidden transition-colors shadow-2xl"
             >
                 <form onSubmit={handleSubmit} className="flex items-end p-2 pl-4 gap-2">
-                    {
-                    /* <button type="button" className="p-2 mb-1 text-white/40 hover:text-white transition-colors rounded-lg hover:bg-white/5">
+                    {/* <button type="button" className="p-2 mb-1 text-white/40 hover:text-white transition-colors rounded-lg hover:bg-white/5">
                         <Paperclip className="size-5" />
-                    </button> */
-                    }
+                    </button> */}
                     <textarea
                         ref={textAreaRef}
                         value={inputVal}
@@ -58,25 +53,17 @@ const Controls = () => {
                             e.currentTarget.style.height = `${Math.min(e.currentTarget.scrollHeight, 150)}px`;
                         }}
                     />
-
                     <button
                         type="submit"
                         disabled={!inputVal.trim() || isTyping}
-                        className={`
-                            mb-1 p-2 rounded-xl transition-all duration-200 shrink-0
-                            ${inputVal.trim() && !isTyping
-                                ? 'bg-white text-black hover:bg-white/90 shadow-[0_0_15px_rgba(255,255,255,0.3)] cursor-pointer'
-                                : 'bg-white/5 text-white/30 cursor-not-allowed'
-                            }
-                        `}
+                        className={`mb-1 p-2 rounded-xl transition-all duration-200 shrink-0 ${inputVal.trim() && !isTyping ? 'bg-white text-black hover:bg-white/90' : 'bg-white/5 text-white/30 cursor-not-allowed'}`}
                     >
                         <ArrowUp className="size-5" />
                     </button>
                 </form>
             </motion.div>
-
             <p className="text-center text-[11px] text-white/20 mt-3 font-medium tracking-wide">
-                Chatbot can make mistakes. Check important info.
+                AI can make mistakes. Check important info.
             </p>
         </div>
     );

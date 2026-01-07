@@ -1,9 +1,16 @@
 import { createContext, useContext, useState, type ReactNode, useCallback, useMemo } from "react";
+import { type AiAssistant } from "../interfaces/ai";
 import { GoogleAiAssistant } from "../assistants/googleAi";
+import { GroqAiAssistant } from "../assistants/groqAi";
 
-const googleAi = new GoogleAiAssistant();
 
-type Message = {
+const assistants: Record<string, AiAssistant> = {
+    "Llama 3.3 (Groq)": new GroqAiAssistant("llama-3.3-70b-versatile"),
+    "GPT OSS (Groq)": new GroqAiAssistant("openai/gpt-oss-120b"),
+    "Gemini 2.5": new GoogleAiAssistant(),
+};
+
+export type Message = {
     role: "user" | "assistant";
     content: string;
 };
@@ -11,6 +18,9 @@ type Message = {
 type ChatContextType = {
     messages: Message[];
     isTyping: boolean;
+    currentModel: string;
+    availableModels: string[];
+    setModel: (model: string) => void;
     addMessage: (content: string) => Promise<void>;
 };
 
@@ -19,45 +29,73 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isTyping, setIsTyping] = useState(false);
+    const [currentModel, setCurrentModel] = useState<string>("Llama 3.3 (Groq)");
 
     const addMessage = useCallback(async (content: string) => {
         if (!content.trim()) return;
 
+
         setMessages((prev) => [...prev, { role: "user", content }]);
         setIsTyping(true);
 
-        try {
-            setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
-            await googleAi.chatStream(content, (chunk) => {
+        setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
+
+        try {
+            const ai = assistants[currentModel];
+            if (!ai) throw new Error(`Model ${currentModel} not initialized`);
+
+            await ai.chatStream(content, (chunk) => {
                 setMessages((prev) => {
                     const newMessages = [...prev];
 
-                    const lastMsg = newMessages.at(-1);
+                    const lastIndex = newMessages.length - 1;
 
-                    if (lastMsg?.role === "assistant") {
+                    const lastMsg = { ...newMessages[lastIndex] };
+
+                    if (lastMsg.role === "assistant") {
                         lastMsg.content += chunk;
+                        newMessages[lastIndex] = lastMsg;
                     }
+
                     return newMessages;
                 });
             });
 
-        } catch (error) {
-            console.error("Chat Error:", error);
-            setMessages((prev) => [...prev, { role: "assistant", content: "⚠️ Something went wrong. Please try again." }]);
+        } catch (error: unknown) {
+            console.error(error);
+            let errorMessage = "⚠️ An error occurred.";
+            if (error instanceof Error) {
+                errorMessage = `⚠️ Error: ${error.message}`;
+            }
+
+            setMessages(prev => {
+                const newMessages = [...prev];
+                const lastIndex = newMessages.length - 1;
+                const lastMsg = { ...newMessages[lastIndex] };
+
+                if (lastMsg.role === "assistant") {
+                    lastMsg.content = errorMessage;
+                    newMessages[lastIndex] = lastMsg;
+                }
+                return newMessages;
+            });
         } finally {
             setIsTyping(false);
         }
-    }, []);
+    }, [currentModel]);
 
-    const contextValue = useMemo(() => ({
+    const value = useMemo(() => ({
         messages,
         isTyping,
+        currentModel,
+        availableModels: Object.keys(assistants),
+        setModel: setCurrentModel,
         addMessage
-    }), [messages, isTyping, addMessage]);
+    }), [messages, isTyping, currentModel, addMessage]);
 
     return (
-        <ChatContext.Provider value={contextValue}>
+        <ChatContext.Provider value={value}>
             {children}
         </ChatContext.Provider>
     );

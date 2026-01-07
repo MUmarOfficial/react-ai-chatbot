@@ -1,21 +1,20 @@
-import OpenAI from "openai";
+import { Groq } from "groq-sdk";
 import { type AiAssistant } from "../interfaces/ai";
 
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPEN_AI_API_KEY,
+const groq = new Groq({
+  apiKey: import.meta.env.VITE_GROQ_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
-type Message = OpenAI.Chat.ChatCompletionMessageParam;
+type Message = Groq.Chat.Completions.ChatCompletionMessageParam;
 
-export class OpenAiAssistant implements AiAssistant {
+export class GroqAiAssistant implements AiAssistant {
   private readonly model: string;
-  private readonly client: OpenAI;
   private readonly history: Message[] = [];
 
-  constructor(model = "gpt-5", client = openai) {
-    this.model = model;
-    this.client = client;
+
+  constructor(modelId = "llama-3.3-70b-versatile") {
+    this.model = modelId;
   }
 
   async chatStream(
@@ -23,12 +22,14 @@ export class OpenAiAssistant implements AiAssistant {
     onChunk: (chunk: string) => void
   ): Promise<void> {
     try {
-      const userMsg: Message = { role: "user", content };
-      this.history.push(userMsg);
+      this.history.push({ role: "user", content });
 
-      const stream = await this.client.chat.completions.create({
+      const stream = await groq.chat.completions.create({
         model: this.model,
         messages: this.history,
+        temperature: 0.6,
+        max_completion_tokens: 8192,
+        top_p: 0.95,
         stream: true,
       });
 
@@ -44,8 +45,8 @@ export class OpenAiAssistant implements AiAssistant {
 
       this.history.push({ role: "assistant", content: fullResponse });
     } catch (error) {
-      console.error("OpenAI Error:", error);
-      onChunk("\n\n[System Error: Connection to OpenAI failed]");
+      console.error("Groq SDK Error:", error);
+      onChunk("\n\n[System Error: Connection to Groq failed]");
       throw error;
     }
   }

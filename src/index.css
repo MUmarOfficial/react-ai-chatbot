@@ -36,13 +36,27 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Firefox Support */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
-/* Aurora Animation */
+.prose table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.prose th, .prose td {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle dark mode border */
+}
+
+.prose th {
+  font-weight: 600;
+  color: #fff;
+}
+
 @keyframes aurora {
   0% { background-position: 50% 50%, 50% 50%; }
   100% { background-position: 350% 50%, 350% 50%; }
