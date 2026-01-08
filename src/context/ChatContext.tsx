@@ -2,12 +2,16 @@ import { createContext, useContext, useState, type ReactNode, useCallback, useMe
 import { type AiAssistant } from "../interfaces/ai";
 import { GoogleAiAssistant } from "../assistants/googleAi";
 import { GroqAiAssistant } from "../assistants/groqAi";
+import { AnthropicAiAssistant } from "../assistants/anthropicAi";
+import { OpenAiAssistant } from "../assistants/openAi";
 
 
 const assistants: Record<string, AiAssistant> = {
     "Llama 3.3 (Groq)": new GroqAiAssistant("llama-3.3-70b-versatile"),
     "GPT OSS (Groq)": new GroqAiAssistant("openai/gpt-oss-120b"),
     "Gemini 2.5": new GoogleAiAssistant(),
+    "Claude 4.5 Haiku": new AnthropicAiAssistant(),
+    "GPT 5": new OpenAiAssistant(),
 };
 
 export type Message = {

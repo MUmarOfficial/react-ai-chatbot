@@ -43,10 +43,26 @@ export class OpenAiAssistant implements AiAssistant {
       }
 
       this.history.push({ role: "assistant", content: fullResponse });
-    } catch (error) {
-      console.error("OpenAI Error:", error);
-      onChunk("\n\n[System Error: Connection to OpenAI failed]");
-      throw error;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error("OpenAi Error:", error);
+
+      let errorMsg = "\n\n⚠️ System Error.";
+
+      if (JSON.stringify(error).includes("credit balance is too low")) {
+        errorMsg =
+          "\n\n⚠️ **Error: OpenAi Credit Balance is $0.**\nPlease add funds or switch to the free Groq models using the dropdown.";
+      } else if (error?.status === 529) {
+        errorMsg =
+          "\n\n⚠️ **Error: OpenAi is Overloaded.**\nOpenAi servers are busy. Please try again in a moment.";
+      } else if (error?.status === 401) {
+        errorMsg =
+          "\n\n⚠️ **Error: Invalid API Key.**\nPlease check your .env file.";
+      } else if (error instanceof Error) {
+        errorMsg += ` - ${error.message}`;
+      }
+
+      onChunk(errorMsg);
     }
   }
 }
