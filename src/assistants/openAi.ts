@@ -13,7 +13,7 @@ export class OpenAiAssistant implements AiAssistant {
   private readonly client: OpenAI;
   private readonly history: Message[] = [];
 
-  constructor(model = "gpt-5", client = openai) {
+  constructor(model = "gpt-4o", client = openai) {
     this.model = model;
     this.client = client;
   }
@@ -45,19 +45,23 @@ export class OpenAiAssistant implements AiAssistant {
       this.history.push({ role: "assistant", content: fullResponse });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("OpenAi Error:", error);
+      console.error("OpenAI Error:", error);
 
       let errorMsg = "\n\n⚠️ System Error.";
 
-      if (JSON.stringify(error).includes("credit balance is too low")) {
+      // Specific OpenAI Error Codes
+      if (error?.status === 401) {
         errorMsg =
-          "\n\n⚠️ **Error: OpenAi Credit Balance is $0.**\nPlease add funds or switch to the free Groq models using the dropdown.";
-      } else if (error?.status === 529) {
+          "\n\n⚠️ **Error: Invalid OpenAI API Key.**\nPlease check your .env file.";
+      } else if (
+        error?.code === "insufficient_quota" ||
+        error?.status === 429
+      ) {
         errorMsg =
-          "\n\n⚠️ **Error: OpenAi is Overloaded.**\nOpenAi servers are busy. Please try again in a moment.";
-      } else if (error?.status === 401) {
+          "\n\n⚠️ **Error: OpenAI Quota Exceeded / $0 Balance.**\nPlease add funds to your OpenAI account.";
+      } else if (error?.status === 500 || error?.status === 503) {
         errorMsg =
-          "\n\n⚠️ **Error: Invalid API Key.**\nPlease check your .env file.";
+          "\n\n⚠️ **Error: OpenAI Server Issue.**\nPlease try again later.";
       } else if (error instanceof Error) {
         errorMsg += ` - ${error.message}`;
       }

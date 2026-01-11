@@ -12,7 +12,6 @@ export class GroqAiAssistant implements AiAssistant {
   private readonly model: string;
   private readonly history: Message[] = [];
 
-
   constructor(modelId = "llama-3.3-70b-versatile") {
     this.model = modelId;
   }
@@ -44,10 +43,27 @@ export class GroqAiAssistant implements AiAssistant {
       }
 
       this.history.push({ role: "assistant", content: fullResponse });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Groq SDK Error:", error);
-      onChunk("\n\n[System Error: Connection to Groq failed]");
-      throw error;
+
+      let errorMsg = "\n\n⚠️ System Error.";
+
+      // Groq uses standard HTTP codes
+      if (error?.status === 401) {
+        errorMsg =
+          "\n\n⚠️ **Error: Invalid Groq API Key.**\nPlease check VITE_GROQ_API_KEY in your .env file.";
+      } else if (error?.status === 429) {
+        errorMsg =
+          "\n\n⚠️ **Error: Groq Rate Limit Exceeded.**\nYou are sending messages too fast for the Free Tier. Please wait a moment.";
+      } else if (error?.status === 503 || error?.status === 500) {
+        errorMsg =
+          "\n\n⚠️ **Error: Groq Service Unavailable.**\nThe model might be down temporarily.";
+      } else if (error instanceof Error) {
+        errorMsg += ` - ${error.message}`;
+      }
+
+      onChunk(errorMsg);
     }
   }
 }

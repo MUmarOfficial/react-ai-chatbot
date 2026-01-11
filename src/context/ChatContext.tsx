@@ -4,6 +4,7 @@ import { GoogleAiAssistant } from "../assistants/googleAi";
 import { GroqAiAssistant } from "../assistants/groqAi";
 import { AnthropicAiAssistant } from "../assistants/anthropicAi";
 import { OpenAiAssistant } from "../assistants/openAi";
+import { XAiAssistant } from "../assistants/xAi";
 
 
 const assistants: Record<string, AiAssistant> = {
@@ -12,6 +13,7 @@ const assistants: Record<string, AiAssistant> = {
     "Gemini 2.5": new GoogleAiAssistant(),
     "Claude 4.5 Haiku": new AnthropicAiAssistant(),
     "GPT 5": new OpenAiAssistant(),
+    "Grok 4": new XAiAssistant(),
 };
 
 export type Message = {

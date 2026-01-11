@@ -41,10 +41,31 @@ export class GoogleAiAssistant implements AiAssistant {
       }
 
       this.history.push({ role: "model", parts: [{ text: fullResponse }] });
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Google AI Error:", error);
-      onChunk("\n\n[System Error: Connection to Gemini failed]");
-      throw error;
+
+      let errorMsg = "\n\n⚠️ System Error.";
+      const errString = error.message || JSON.stringify(error);
+
+      if (errString.includes("401") || errString.includes("API key")) {
+        errorMsg =
+          "\n\n⚠️ **Error: Invalid Google API Key.**\nPlease check your .env file.";
+      } else if (errString.includes("429") || errString.includes("quota")) {
+        errorMsg =
+          "\n\n⚠️ **Error: Gemini Rate Limit / Quota Exceeded.**\nYou are sending requests too fast or hit the free tier limit.";
+      } else if (
+        errString.includes("503") ||
+        errString.includes("overloaded")
+      ) {
+        errorMsg =
+          "\n\n⚠️ **Error: Gemini is Overloaded.**\nGoogle servers are busy. Please try again later.";
+      } else if (error instanceof Error) {
+        errorMsg += ` - ${error.message}`;
+      }
+
+      onChunk(errorMsg);
+      // We do not throw here so the UI shows the message elegantly
     }
   }
 }

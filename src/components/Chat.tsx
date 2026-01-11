@@ -2,13 +2,21 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { useState, type FC } from "react";
+import { useState, type ComponentPropsWithoutRef, type FC, type ReactNode } from "react";
 import { User, Sparkles, Copy, Check } from "lucide-react";
 
 type ChatProps = {
     role: "user" | "assistant";
     content: string;
 };
+
+const extractText = (node: ReactNode): string => {
+    if (typeof node === "string") return node;
+    if (typeof node === "number") return String(node);
+    if (Array.isArray(node)) return node.map(extractText).join("");
+    return "";
+};
+
 
 const CodeBlock = ({ language, children }: { language: string; children: string }) => {
     const [copied, setCopied] = useState(false);
@@ -61,10 +69,12 @@ const CodeBlock = ({ language, children }: { language: string; children: string 
     );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CodeRenderer = ({ className, children, ...props }: any) => {
+
+const CodeRenderer = ({ className, children, ...props }: ComponentPropsWithoutRef<'code'>) => {
     const match = /language-(\w+)/.exec(className || "");
     const isInline = !match;
+
+    const textContent = extractText(children).replace(/\n$/, "");
 
     if (isInline) {
         return (
@@ -74,47 +84,45 @@ const CodeRenderer = ({ className, children, ...props }: any) => {
         );
     }
 
-    // Safely cast children to string for the code block
-    const codeContent = String(children).replace(/\n$/, "");
-
     return (
-        <CodeBlock language={match[1]}>
-            {codeContent}
+        <CodeBlock language={match[1] || ""}>
+            {textContent}
         </CodeBlock>
     );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const TableRenderer = ({ children }: any) => (
+const TableRenderer = ({ children, ...props }: ComponentPropsWithoutRef<'table'>) => (
     <div className="overflow-x-auto my-4 border border-white/10 rounded-lg">
-        <table className="w-full text-left text-sm border-collapse">
+        <table className="w-full text-left text-sm border-collapse" {...props}>
             {children}
         </table>
     </div>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const TheadRenderer = ({ children }: any) => (
-    <thead className="bg-white/5 text-white/80 border-b border-white/10">
+const TheadRenderer = ({ children, ...props }: ComponentPropsWithoutRef<'thead'>) => (
+    <thead className="bg-white/5 text-white/80 border-b border-white/10" {...props}>
         {children}
     </thead>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ThRenderer = ({ children }: any) => (
-    <th className="p-3 font-semibold">{children}</th>
+const ThRenderer = ({ children, ...props }: ComponentPropsWithoutRef<'th'>) => (
+    <th className="p-3 font-semibold" {...props}>{children}</th>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const TdRenderer = ({ children }: any) => (
-    <td className="p-3 border-b border-white/5 text-white/70">
+const TdRenderer = ({ children, ...props }: ComponentPropsWithoutRef<'td'>) => (
+    <td className="p-3 border-b border-white/5 text-white/70" {...props}>
         {children}
     </td>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const LinkRenderer = ({ children, href }: any) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
+const LinkRenderer = ({ children, href, ...props }: ComponentPropsWithoutRef<'a'>) => (
+    <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-400 hover:underline"
+        {...props}
+    >
         {children}
     </a>
 );
