@@ -1,0 +1,119 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+.chatRow {
+  @apply flex gap-4 max-w-full;
+}
+
+.chatRowUser {
+  @apply flex-row-reverse;
+}
+
+.avatar {
+  @apply shrink-0 size-8 rounded-lg flex items-center justify-center transition-colors;
+}
+
+.avatarUser {
+  background-color: var(--bg-active);
+  color: var(--text-secondary);
+}
+
+.avatarAi {
+  background-color: transparent;
+  color: var(--accent-primary);
+}
+
+.contentWrapper {
+  @apply flex flex-col max-w-[85%] sm:max-w-[80%];
+}
+
+.alignEnd {
+  @apply items-end;
+}
+
+.alignStart {
+  @apply items-start;
+}
+
+.bubble {
+  @apply py-2 px-4 rounded-2xl text-[15px] leading-7 tracking-wide w-full max-w-none transition-colors duration-300;
+}
+
+.bubbleUser {
+  background-color: var(--bg-bubble-user);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  
+  & :where(p) { color: var(--text-primary); }
+  & :where(a) { color: var(--accent-primary); }
+}
+
+.bubbleAi {
+  background-color: transparent;
+  color: var(--text-primary);
+
+  & :where(p, li, ul, ol) { color: var(--text-primary); }
+  & :where(strong, h1, h2, h3, h4) { color: var(--text-primary); font-weight: 600; }
+  & :where(code) { color: #ec4899; }
+  & :where(a) { color: var(--accent-primary); text-decoration: underline; }
+}
+
+/* Code Block Styles */
+.codeBlockContainer {
+  @apply my-4 rounded-xl overflow-hidden border transition-colors;
+  background-color: var(--bg-code);
+  border-color: var(--border-subtle);
+}
+
+.codeHeader {
+  @apply flex items-center justify-between px-4 py-2 border-b;
+  background-color: var(--bg-active);
+  border-color: var(--border-subtle);
+}
+
+.langLabel {
+  @apply text-xs font-medium uppercase tracking-wider;
+  color: var(--text-secondary);
+}
+
+.copyBtn {
+  @apply flex items-center gap-1.5 text-xs transition-colors;
+  color: var(--text-secondary);
+}
+
+.copyBtn:hover {
+  color: var(--text-primary);
+}
+
+.inlineCode {
+  @apply px-1.5 py-0.5 rounded text-sm font-mono;
+  background-color: var(--bg-active);
+  color: #ec4899;
+}
+
+/* Table Styles */
+.tableWrapper {
+  @apply overflow-x-auto my-4 border rounded-lg;
+  border-color: var(--border-subtle);
+}
+
+.table {
+  @apply w-full text-left text-sm border-collapse;
+}
+
+.thead {
+  @apply border-b;
+  background-color: var(--bg-active);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.th {
+  @apply p-3 font-semibold;
+}
+
+.td {
+  @apply p-3 border-b;
+  border-color: var(--border-subtle);
+  color: var(--text-secondary);
+}

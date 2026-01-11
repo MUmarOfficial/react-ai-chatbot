@@ -3,19 +3,20 @@ import Header from "./components/Header";
 import Controls from "./components/controls/Controls";
 import { ChatProvider } from "./context/ChatContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import styles from "./App.module.css";
 
 function App() {
   return (
     <ThemeProvider>
       <ChatProvider>
-        <div className="relative flex flex-col h-dvh w-full bg-black text-white overflow-hidden">
-          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-[-10%] left-[-10%] w-125 h-125 bg-blue-900/20 rounded-full blur-[120px] mix-blend-screen opacity-50" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-125 h-125 bg-purple-900/10 rounded-full blur-[120px] mix-blend-screen opacity-50" />
+        <div className={styles.appContainer}>
+          <div className={styles.backgroundEffects}>
+            <div className={styles.blobBlue} />
+            <div className={styles.blobPurple} />
           </div>
-          <div className="relative z-10 flex flex-col h-full max-w-5xl mx-auto w-full">
+          <div className={styles.contentWrapper}>
             <Header />
-            <main className="flex-1 flex flex-col min-h-0 relative">
+            <main className={styles.mainArea}>
               <ChatContainer />
               <Controls />
             </main>

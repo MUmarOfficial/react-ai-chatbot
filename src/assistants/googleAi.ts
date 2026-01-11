@@ -65,7 +65,6 @@ export class GoogleAiAssistant implements AiAssistant {
       }
 
       onChunk(errorMsg);
-      // We do not throw here so the UI shows the message elegantly
     }
   }
 }

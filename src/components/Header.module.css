@@ -1,0 +1,102 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+.header {
+  @apply shrink-0 py-4 px-6 flex items-center justify-between z-50 backdrop-blur-md transition-colors duration-300 rounded-2xl;
+  background-color: var(--bg-panel);
+}
+
+.header {
+  background-color: color-mix(in srgb, var(--bg-panel), transparent 30%);
+}
+
+.logoGroup {
+  @apply flex items-center gap-3;
+}
+
+.iconWrapper {
+  @apply relative flex items-center justify-center size-10;
+}
+
+.iconGlow {
+  @apply absolute inset-0 rounded-xl blur-sm transition-colors;
+  background-color: var(--accent-glow);
+}
+
+.iconContainer {
+  @apply relative rounded-xl p-2 backdrop-blur-md transition-colors;
+  background-color: color-mix(in srgb, var(--bg-panel), transparent 50%);
+  border: 1px solid var(--border-subtle);
+}
+
+.title {
+  @apply text-xl font-medium tracking-tight font-sans hidden sm:block transition-colors;
+  color: var(--text-primary);
+}
+
+.controlsGroup {
+  @apply flex items-center gap-3;
+}
+
+.modelSelector {
+  @apply relative;
+}
+
+.modelBtn {
+  @apply relative flex items-center gap-2 rounded-full px-4 py-2 backdrop-blur-md transition-all duration-200 active:scale-95;
+  background-color: var(--bg-hover);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.modelBtn:hover {
+  border-color: var(--border-strong);
+}
+
+.modelBtnActive {
+  @apply ring-2;
+  ring-color: var(--accent-glow);
+  border-color: var(--accent-primary);
+}
+
+.dropdownMenu {
+  @apply absolute right-0 top-full mt-2 w-56 z-50 origin-top-right;
+}
+
+.dropdownContent {
+  @apply p-1.5 backdrop-blur-xl rounded-2xl shadow-xl ring-1;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  ring-color: var(--border-subtle);
+}
+
+.menuItem {
+  @apply w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all;
+  color: var(--text-secondary);
+}
+
+.menuItem:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.menuItemActive {
+  background-color: var(--bg-active);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.menuItemInactive {
+  color: var(--text-secondary);
+}
+
+/* Theme Toggle */
+.themeToggle {
+  @apply p-2 rounded-full transition-colors;
+  color: var(--text-secondary);
+}
+
+.themeToggle:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}

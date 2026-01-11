@@ -49,7 +49,6 @@ export class OpenAiAssistant implements AiAssistant {
 
       let errorMsg = "\n\n⚠️ System Error.";
 
-      // Specific OpenAI Error Codes
       if (error?.status === 401) {
         errorMsg =
           "\n\n⚠️ **Error: Invalid OpenAI API Key.**\nPlease check your .env file.";

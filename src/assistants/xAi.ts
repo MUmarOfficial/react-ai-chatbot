@@ -26,7 +26,6 @@ export class XAiAssistant implements AiAssistant {
     try {
       this.history.push({ role: "user", content });
 
-      // 1. Initialize the stream
       const result = streamText({
         model: xai(this.model),
         messages: this.history,
@@ -34,7 +33,6 @@ export class XAiAssistant implements AiAssistant {
 
       let fullResponse = "";
 
-      // 2. Consume the stream (The error happens HERE)
       for await (const chunk of result.textStream) {
         fullResponse += chunk;
         onChunk(chunk);

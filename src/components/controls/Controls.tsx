@@ -1,10 +1,13 @@
 import { useState, useRef, type FormEvent } from "react";
 import { useChat } from "../../context/ChatContext";
+import { useTheme } from "../../context/ThemeContext";
 import { ArrowUp } from "lucide-react";
 import { motion } from "framer-motion";
+import styles from "./Controls.module.css";
 
 const Controls = () => {
     const { addMessage, isTyping } = useChat();
+    const { resolvedTheme } = useTheme();
     const [inputVal, setInputVal] = useState("");
     const [isFocused, setIsFocused] = useState(false);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -24,19 +27,30 @@ const Controls = () => {
         }
     };
 
+    const getBorderColor = () => {
+        if (resolvedTheme === 'light') {
+            return isFocused ? "rgba(0,0,0,0.15)" : "rgba(0,0,0,0.08)";
+        }
+        return isFocused ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)";
+    };
+
+    const getBgColor = () => {
+        if (resolvedTheme === 'light') {
+            return isFocused ? "rgba(255,255,255, 0.9)" : "rgba(255,255,255, 0.6)";
+        }
+        return isFocused ? "rgba(10,10,10, 0.9)" : "rgba(10,10,10, 0.6)";
+    };
+
     return (
-        <div className="p-4 pb-6 shrink-0 z-20 bg-linear-to-t from-black via-black to-transparent">
+        <div className={styles.container}>
             <motion.div
                 animate={{
-                    borderColor: isFocused ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)",
-                    backgroundColor: isFocused ? "rgba(10,10,10, 0.9)" : "rgba(10,10,10, 0.6)"
+                    borderColor: getBorderColor(),
+                    backgroundColor: getBgColor()
                 }}
-                className="max-w-3xl mx-auto relative backdrop-blur-xl border rounded-2xl overflow-hidden transition-colors shadow-2xl"
+                className={styles.inputWrapper}
             >
-                <form onSubmit={handleSubmit} className="flex items-end p-2 pl-4 gap-2">
-                    {/* <button type="button" className="p-2 mb-1 text-white/40 hover:text-white transition-colors rounded-lg hover:bg-white/5">
-                        <Paperclip className="size-5" />
-                    </button> */}
+                <form onSubmit={handleSubmit} className={styles.form}>
                     <textarea
                         ref={textAreaRef}
                         value={inputVal}
@@ -47,7 +61,7 @@ const Controls = () => {
                         placeholder="Ask anything..."
                         rows={1}
                         disabled={isTyping}
-                        className="flex-1 bg-transparent text-white placeholder-white/30 py-3 max-h-37.5 resize-none outline-none text-[15px] leading-relaxed custom-scrollbar"
+                        className={`${styles.textarea} custom-scrollbar`}
                         onInput={(e) => {
                             e.currentTarget.style.height = "auto";
                             e.currentTarget.style.height = `${Math.min(e.currentTarget.scrollHeight, 150)}px`;
@@ -56,13 +70,13 @@ const Controls = () => {
                     <button
                         type="submit"
                         disabled={!inputVal.trim() || isTyping}
-                        className={`mb-1 p-2 rounded-xl transition-all duration-200 shrink-0 ${inputVal.trim() && !isTyping ? 'bg-white text-black hover:bg-white/90' : 'bg-white/5 text-white/30 cursor-not-allowed'}`}
+                        className={`${styles.submitBtn} ${inputVal.trim() && !isTyping ? styles.submitBtnActive : styles.submitBtnDisabled}`}
                     >
                         <ArrowUp className="size-5" />
                     </button>
                 </form>
             </motion.div>
-            <p className="text-center text-[11px] text-white/20 mt-3 font-medium tracking-wide">
+            <p className={styles.disclaimer}>
                 AI can make mistakes. Check important info.
             </p>
         </div>

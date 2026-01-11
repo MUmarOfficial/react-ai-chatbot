@@ -1,0 +1,48 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+.container {
+  @apply flex-1 overflow-y-auto px-4 py-6 scroll-smooth relative;
+}
+
+.heroContainer {
+  @apply absolute inset-0 flex flex-col items-center justify-center z-0 pointer-events-none p-4 text-center;
+}
+
+.heroGlow {
+  @apply absolute inset-0 rounded-full blur-[100px];
+  background-color: var(--blob-blue);
+}
+
+.heroTitle {
+  @apply relative text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-transparent bg-clip-text select-none transition-all duration-300;
+  background-image: linear-gradient(to bottom, var(--text-primary), var(--text-secondary), transparent);
+}
+
+.heroSubtitle {
+  @apply mt-8 text-lg font-light tracking-wide transition-colors;
+  color: var(--text-placeholder);
+}
+
+.messageList {
+  @apply max-w-3xl mx-auto space-y-6 pb-4;
+}
+
+.typingIndicator {
+  @apply flex items-center gap-3 ml-2;
+}
+
+.typingDot {
+  @apply size-8 rounded-lg flex items-center justify-center;
+  border: 1px solid var(--border-subtle);
+}
+
+.typingPulse {
+  @apply size-2 rounded-full animate-pulse;
+  background-color: var(--accent-primary);
+}
+
+.typingText {
+  @apply text-sm font-light;
+  color: var(--text-placeholder);
+}

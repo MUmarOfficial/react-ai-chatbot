@@ -49,7 +49,6 @@ export class GroqAiAssistant implements AiAssistant {
 
       let errorMsg = "\n\n⚠️ System Error.";
 
-      // Groq uses standard HTTP codes
       if (error?.status === 401) {
         errorMsg =
           "\n\n⚠️ **Error: Invalid Groq API Key.**\nPlease check VITE_GROQ_API_KEY in your .env file.";
