@@ -1,18 +1,17 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check, Sun, Moon, Monitor } from "lucide-react";
+import { ChevronDown, Check, Sun, Moon } from "lucide-react"; // Removed Monitor
 import { useChat } from "../context/ChatContext";
 import { useTheme } from "../context/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Header.module.css";
 
-const ThemeIcon = ({ theme, resolvedTheme }: { theme: string; resolvedTheme: "light" | "dark" }) => {
-    if (theme === 'system') return <Monitor className="size-5" />;
-    return resolvedTheme === 'dark' ? <Moon className="size-5" /> : <Sun className="size-5" />;
+const ThemeIcon = ({ theme }: { theme: "light" | "dark" }) => {
+    return theme === 'dark' ? <Moon className="size-5" /> : <Sun className="size-5" />;
 };
 
 const Header = () => {
     const { currentModel, setModel, availableModels } = useChat();
-    const { theme, setTheme, resolvedTheme } = useTheme();
+    const { theme, setTheme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -27,9 +26,7 @@ const Header = () => {
     }, []);
 
     const toggleTheme = () => {
-        if (theme === 'light') setTheme('dark');
-        else if (theme === 'dark') setTheme('system');
-        else setTheme('light');
+        setTheme(theme === 'light' ? 'dark' : 'light');
     };
 
     return (
@@ -48,7 +45,7 @@ const Header = () => {
 
             <div className={styles.controlsGroup}>
                 <button onClick={toggleTheme} className={styles.themeToggle} title={`Current theme: ${theme}`}>
-                    <ThemeIcon theme={theme} resolvedTheme={resolvedTheme} />
+                    <ThemeIcon theme={theme} />
                 </button>
 
                 <div className={styles.modelSelector} ref={dropdownRef}>

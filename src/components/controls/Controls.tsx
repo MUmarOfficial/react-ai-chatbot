@@ -7,7 +7,7 @@ import styles from "./Controls.module.css";
 
 const Controls = () => {
     const { addMessage, isTyping } = useChat();
-    const { resolvedTheme } = useTheme();
+    const { theme } = useTheme();
     const [inputVal, setInputVal] = useState("");
     const [isFocused, setIsFocused] = useState(false);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -28,14 +28,14 @@ const Controls = () => {
     };
 
     const getBorderColor = () => {
-        if (resolvedTheme === 'light') {
+        if (theme === 'light') {
             return isFocused ? "rgba(0,0,0,0.15)" : "rgba(0,0,0,0.08)";
         }
         return isFocused ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)";
     };
 
     const getBgColor = () => {
-        if (resolvedTheme === 'light') {
+        if (theme === 'light') {
             return isFocused ? "rgba(255,255,255, 0.9)" : "rgba(255,255,255, 0.6)";
         }
         return isFocused ? "rgba(10,10,10, 0.9)" : "rgba(10,10,10, 0.6)";
