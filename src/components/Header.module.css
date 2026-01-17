@@ -92,7 +92,7 @@
 
 /* Theme Toggle */
 .themeToggle {
-  @apply p-2 rounded-full transition-colors;
+  @apply p-2 rounded-full transition-colors cursor-pointer;
   color: var(--text-secondary);
 }
 

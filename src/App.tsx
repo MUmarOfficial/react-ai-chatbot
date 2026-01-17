@@ -1,4 +1,4 @@
-import ChatContainer from "./components/ChatContainer";
+import ChatContainer from "./components/chat/ChatContainer";
 import Header from "./components/Header";
 import Controls from "./components/controls/Controls";
 import { ChatProvider } from "./context/ChatContext";

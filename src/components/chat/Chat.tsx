@@ -4,7 +4,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus, ghcolors } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useState, type ComponentPropsWithoutRef, type FC, type ReactNode } from "react";
 import { User, Sparkles, Copy, Check } from "lucide-react";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../../context/ThemeContext";
 import { motion } from "framer-motion";
 import styles from "./Chat.module.css";
 
@@ -21,7 +21,7 @@ const extractText = (node: ReactNode): string => {
 };
 
 const CodeBlock = ({ language, children }: { language: string; children: string }) => {
-    const { resolvedTheme } = useTheme();
+    const { theme } = useTheme();
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
@@ -55,7 +55,7 @@ const CodeBlock = ({ language, children }: { language: string; children: string 
             </div>
             <SyntaxHighlighter
                 language={language}
-                style={resolvedTheme === 'dark' ? vscDarkPlus : ghcolors}
+                style={theme === 'dark' ? vscDarkPlus : ghcolors}
                 customStyle={{
                     margin: 0,
                     padding: "1.5rem",

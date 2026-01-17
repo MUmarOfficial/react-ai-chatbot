@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import Chat from "./Chat";
-import { useChat } from "../context/ChatContext";
+import { useChat } from "../../context/ChatContext";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./ChatContainer.module.css";
 
