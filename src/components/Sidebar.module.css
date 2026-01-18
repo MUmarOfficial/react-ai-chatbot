@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 .sidebar {
-  @apply fixed inset-y-0 left-0 z-40 flex flex-col w-[260px] h-full transition-transform duration-300 ease-in-out border-r backdrop-blur-xl;
+  @apply fixed inset-y-0 left-0 z-40 flex flex-col w-65 h-full transition-transform duration-300 ease-in-out border-r backdrop-blur-xl;
   background-color: color-mix(in srgb, var(--bg-panel), transparent 20%);
   border-color: var(--border-subtle);
   transform: translateX(0);
@@ -26,27 +26,34 @@
   @apply p-4 shrink-0;
 }
 
-.logoGroup {
-  @apply flex items-center gap-3 mb-4 mt-18;
+.mobileLogoContainer {
+  @apply flex items-center gap-3 mb-6 px-1 md:hidden;
 }
 
-.iconWrapper {
-  @apply relative flex items-center justify-center size-10;
+.mobileLogoWrapper {
+  @apply relative flex items-center justify-center size-8;
 }
 
-.iconGlow {
-  @apply absolute inset-0 rounded-xl blur-sm transition-colors;
-  background-color: var(--accent-glow);
+.logoGlow {
+  @apply absolute inset-0 rounded-lg blur-sm bg-blue-500/20;
 }
 
-.iconContainer {
-  @apply relative rounded-xl p-2 backdrop-blur-md transition-colors;
-  background-color: color-mix(in srgb, var(--bg-panel), transparent 50%);
-  border: 1px solid var(--border-subtle);
+.logoIcon {
+  @apply relative rounded-lg p-1.5 bg-white/10 border border-white/10 w-full h-full object-contain;
 }
 
-.title {
-  @apply text-xl font-medium tracking-tight font-sans block transition-colors;
+.logoText {
+  @apply text-lg font-medium;
+  color: var(--text-primary);
+}
+
+.closeBtn {
+  @apply ml-auto p-1 rounded-md transition-colors border-0 bg-transparent cursor-pointer;
+  color: var(--text-secondary);
+}
+
+.closeBtn:hover {
+  background-color: var(--bg-hover);
   color: var(--text-primary);
 }
 
@@ -61,6 +68,11 @@
   @apply shadow-md;
   background-color: var(--bg-hover);
   border-color: var(--border-strong);
+}
+
+.newChatBtn:disabled {
+  @apply opacity-50 cursor-not-allowed shadow-none border-gray-200;
+  background-color: var(--bg-active);
 }
 
 .scroller {
@@ -82,6 +94,12 @@
   color: var(--text-primary);
 }
 
+.item:disabled {
+  @apply opacity-50 cursor-not-allowed;
+  background-color: transparent;
+  color: var(--text-secondary);
+}
+
 .itemActive {
   background-color: var(--bg-active);
   color: var(--text-primary);
@@ -89,7 +107,7 @@
 }
 
 .itemText {
-  @apply truncate relative z-10;
+  @apply truncate relative z-10 flex-1;
 }
 
 .fadeIn {
