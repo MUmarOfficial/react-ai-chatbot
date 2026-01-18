@@ -73,7 +73,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                         onClick={() => setIsOpen(!isOpen)}
                         className={`${styles.modelBtn} ${isOpen ? styles.modelBtnActive : ''}`}
                     >
-                        <span className="text-sm font-medium min-w-25 text-left truncate max-w-[100px] sm:max-w-none">
+                        <span className="text-sm font-medium min-w-25 text-left truncate max-w-25 sm:max-w-none">
                             {currentModel}
                         </span>
                         <ChevronDown
