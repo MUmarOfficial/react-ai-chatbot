@@ -1,15 +1,19 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check, Sun, Moon } from "lucide-react"; // Removed Monitor
+import { ChevronDown, Check, Sun, Moon, Menu } from "lucide-react";
 import { useChat } from "../context/ChatContext";
 import { useTheme } from "../context/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Header.module.css";
 
+type HeaderProps = {
+    onMenuClick?: () => void;
+};
+
 const ThemeIcon = ({ theme }: { theme: "light" | "dark" }) => {
     return theme === 'dark' ? <Moon className="size-5" /> : <Sun className="size-5" />;
 };
 
-const Header = () => {
+const Header = ({ onMenuClick }: HeaderProps) => {
     const { currentModel, setModel, availableModels } = useChat();
     const { theme, setTheme } = useTheme();
     const [isOpen, setIsOpen] = useState(false);
@@ -31,16 +35,32 @@ const Header = () => {
 
     return (
         <header className={styles.header}>
-            <div className={styles.logoGroup}>
-                <div className={styles.iconWrapper}>
-                    <div className={styles.iconGlow} />
-                    <div className={styles.iconContainer}>
-                        <img src="/chatbotLogo.png" alt="Chatbot Logo" />
-                    </div>
-                </div>
-                <span className={styles.title}>
-                    AI Chatbot
-                </span>
+            <div className="flex items-center gap-3">
+                <button
+                    type="button"
+                    onClick={onMenuClick}
+                    className="md:hidden p-2 -ml-2 rounded-lg text-gray-500 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                    aria-label="Open menu"
+                >
+                    <Menu className="size-6" />
+                </button>
+
+                {
+                    innerWidth > 640 && (
+                        <div className={`${styles.logoGroup}`}>
+                            <div className={styles.iconWrapper}>
+                                <div className={styles.iconGlow} />
+                                <div className={styles.iconContainer}>
+                                    <img src="/chatbotLogo.png" alt="Chatbot Logo" />
+                                </div>
+                            </div>
+                            <span className={styles.title}>
+                                AI Chatbot
+                            </span>
+                        </div>
+                    )
+                }
+
             </div>
 
             <div className={styles.controlsGroup}>
@@ -53,7 +73,7 @@ const Header = () => {
                         onClick={() => setIsOpen(!isOpen)}
                         className={`${styles.modelBtn} ${isOpen ? styles.modelBtnActive : ''}`}
                     >
-                        <span className="text-sm font-medium min-w-25 text-left">
+                        <span className="text-sm font-medium min-w-25 text-left truncate max-w-[100px] sm:max-w-none">
                             {currentModel}
                         </span>
                         <ChevronDown

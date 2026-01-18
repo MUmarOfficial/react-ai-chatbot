@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+.sidebar {
+  @apply fixed inset-y-0 left-0 z-40 flex flex-col w-[260px] h-full transition-transform duration-300 ease-in-out border-r backdrop-blur-xl;
+  background-color: color-mix(in srgb, var(--bg-panel), transparent 20%);
+  border-color: var(--border-subtle);
+  transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .overlay {
+    @apply fixed inset-0 z-30 w-full h-full border-0 cursor-pointer block bg-black/50 backdrop-blur-sm transition-opacity duration-300;
+  }
+}
+
+.header {
+  @apply p-4 shrink-0;
+}
+
+.logoGroup {
+  @apply flex items-center gap-3 mb-4 mt-18;
+}
+
+.iconWrapper {
+  @apply relative flex items-center justify-center size-10;
+}
+
+.iconGlow {
+  @apply absolute inset-0 rounded-xl blur-sm transition-colors;
+  background-color: var(--accent-glow);
+}
+
+.iconContainer {
+  @apply relative rounded-xl p-2 backdrop-blur-md transition-colors;
+  background-color: color-mix(in srgb, var(--bg-panel), transparent 50%);
+  border: 1px solid var(--border-subtle);
+}
+
+.title {
+  @apply text-xl font-medium tracking-tight font-sans block transition-colors;
+  color: var(--text-primary);
+}
+
+.newChatBtn {
+  @apply flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-200 shadow-sm border text-left cursor-pointer;
+  background-color: var(--bg-active);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.newChatBtn:hover {
+  @apply shadow-md;
+  background-color: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+.scroller {
+  @apply flex-1 overflow-y-auto px-3 py-2;
+}
+
+.sectionTitle {
+  @apply px-4 py-2 mt-4 text-xs font-semibold uppercase tracking-wider sticky top-0 backdrop-blur-md z-10;
+  color: var(--text-secondary);
+}
+
+.item {
+  @apply flex items-center gap-3 w-full px-4 py-2.5 my-1 rounded-lg text-sm transition-colors cursor-pointer relative overflow-hidden text-left border-0 bg-transparent;
+  color: var(--text-secondary);
+}
+
+.item:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.itemActive {
+  background-color: var(--bg-active);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.itemText {
+  @apply truncate relative z-10;
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
