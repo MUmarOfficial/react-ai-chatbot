@@ -83,6 +83,7 @@ const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
                 className={`${styles.overlay} ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none md:hidden'}`}
                 onClick={onClose}
                 aria-label="Close sidebar overlay"
+                data-testid="sidebar-overlay"
             />
 
             <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
@@ -101,6 +102,7 @@ const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
                             className={styles.closeBtn}
                             onClick={(e) => { e.stopPropagation(); onClose?.(); }}
                             aria-label="Close sidebar"
+                            data-testid="sidebar-close-btn"
                         >
                             <PanelLeftClose className="size-5" />
                         </button>
@@ -110,13 +112,14 @@ const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
                         onClick={handleNewChat}
                         disabled={isTyping}
                         className={styles.newChatBtn}
+                        data-testid="new-chat-btn"
                     >
                         <MessageSquarePlus className={`size-5 ${isTyping ? 'text-gray-400' : 'text-blue-500'}`} />
                         <span className="font-medium">New Chat</span>
                     </button>
                 </div>
 
-                <div className={`${styles.scroller} custom-scrollbar`}>
+                <div className={`${styles.scroller} custom-scrollbar`} data-testid="session-list">
                     {groupedSessions.map((section, index) => (
                         <div key={section.label} className={styles.fadeIn} style={{ animationDelay: `${index * 0.1}s` }}>
                             <h3 className={styles.sectionTitle}>{section.label}</h3>
@@ -127,6 +130,7 @@ const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
                                         onClick={() => handleSwitchSession(session.id)}
                                         disabled={isTyping}
                                         className={`${styles.item} ${currentSessionId === session.id ? styles.itemActive : ''}`}
+                                        data-testid={`session-item-${session.id}`}
                                     >
                                         <MessageSquare className="size-4 shrink-0 opacity-70" />
                                         <span className={styles.itemText}>{session.title}</span>
@@ -146,6 +150,7 @@ const Sidebar = ({ isOpen = true, onClose }: SidebarProps) => {
                                             }`}
                                         aria-label={`Delete chat ${session.title}`}
                                         title="Delete Chat"
+                                        data-testid={`delete-chat-${session.id}`}
                                     >
                                         <Trash2 className="size-3.5" />
                                     </button>

@@ -66,11 +66,13 @@ const Controls = () => {
                             e.currentTarget.style.height = "auto";
                             e.currentTarget.style.height = `${Math.min(e.currentTarget.scrollHeight, 150)}px`;
                         }}
+                        data-testid="chat-input"
                     />
                     <button
                         type="submit"
                         disabled={!inputVal.trim() || isTyping}
                         className={`${styles.submitBtn} ${inputVal.trim() && !isTyping ? styles.submitBtnActive : styles.submitBtnDisabled}`}
+                        data-testid="send-btn"
                     >
                         <ArrowUp className="size-5" />
                     </button>

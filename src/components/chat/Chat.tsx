@@ -146,13 +146,14 @@ const Chat: FC<ChatProps> = ({ role, content }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             className={`${styles.chatRow} ${isUser ? styles.chatRowUser : ''}`}
+            data-testid={`chat-row-${role}`}
         >
             <div className={`${styles.avatar} ${isUser ? styles.avatarUser : styles.avatarAi}`}>
                 {isUser ? <User className="size-5" /> : <Sparkles className="size-5" />}
             </div>
 
             <div className={`${styles.contentWrapper} ${isUser ? styles.alignEnd : styles.alignStart}`}>
-                <div className={`${styles.bubble} ${isUser ? styles.bubbleUser : styles.bubbleAi}`}>
+                <div className={`${styles.bubble} ${isUser ? styles.bubbleUser : styles.bubbleAi}`} data-testid="chat-bubble">
                     <Markdown
                         remarkPlugins={[remarkGfm]}
                         components={markdownComponents}

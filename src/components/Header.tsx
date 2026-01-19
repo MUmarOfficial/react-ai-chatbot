@@ -41,13 +41,14 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                     onClick={onMenuClick}
                     className="md:hidden p-2 -ml-2 rounded-lg text-gray-500 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                     aria-label="Open menu"
+                    data-testid="mobile-menu-btn"
                 >
                     <Menu className="size-6" />
                 </button>
 
                 {
                     innerWidth > 640 && (
-                        <div className={`${styles.logoGroup}`}>
+                        <div className={`${styles.logoGroup}`} data-testid="header-logo-group">
                             <div className={styles.iconWrapper}>
                                 <div className={styles.iconGlow} />
                                 <div className={styles.iconContainer}>
@@ -64,7 +65,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
             </div>
 
             <div className={styles.controlsGroup}>
-                <button onClick={toggleTheme} className={styles.themeToggle} title={`Current theme: ${theme}`}>
+                <button onClick={toggleTheme} className={styles.themeToggle} title={`Current theme: ${theme}`} data-testid="theme-toggle-btn">
                     <ThemeIcon theme={theme} />
                 </button>
 
@@ -72,6 +73,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                     <button
                         onClick={() => setIsOpen(!isOpen)}
                         className={`${styles.modelBtn} ${isOpen ? styles.modelBtnActive : ''}`}
+                        data-testid="model-selector-btn"
                     >
                         <span className="text-sm font-medium min-w-25 text-left truncate max-w-25 sm:max-w-none">
                             {currentModel}
@@ -89,6 +91,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                                 exit={{ opacity: 0, y: 8, scale: 0.95 }}
                                 transition={{ duration: 0.15, ease: "easeOut" }}
                                 className={styles.dropdownMenu}
+                                data-testid="model-dropdown"
                             >
                                 <div className={styles.dropdownContent}>
                                     {availableModels.map((model) => {
@@ -96,6 +99,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                                         return (
                                             <button
                                                 key={model}
+                                                data-testid={`model-option-${model}`}
                                                 onClick={() => {
                                                     setModel(model);
                                                     setIsOpen(false);

@@ -26,6 +26,7 @@ const ChatContainer = () => {
                         exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
                         transition={{ duration: 0.5 }}
                         className={styles.heroContainer}
+                        data-testid="hero-section"
                     >
                         <div className="relative">
                             <div className={styles.heroGlow} />
@@ -43,6 +44,7 @@ const ChatContainer = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         className={styles.messageList}
+                        data-testid="message-list"
                     >
                         {messages.map((msg, index) => (
                             <Chat key={index} role={msg.role} content={msg.content} />
@@ -53,6 +55,7 @@ const ChatContainer = () => {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className={styles.typingIndicator}
+                                data-testid="typing-indicator"
                             >
                                 <div className={styles.typingDot}>
                                     <div className={styles.typingPulse} />

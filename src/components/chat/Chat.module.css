@@ -58,7 +58,6 @@
   & :where(a) { color: var(--accent-primary); text-decoration: underline; }
 }
 
-/* Code Block Styles */
 .codeBlockContainer {
   @apply my-4 rounded-xl overflow-hidden border transition-colors;
   background-color: var(--bg-code);
@@ -91,7 +90,6 @@
   color: #ec4899;
 }
 
-/* Table Styles */
 .tableWrapper {
   @apply overflow-x-auto my-4 border rounded-lg;
   border-color: var(--border-subtle);
