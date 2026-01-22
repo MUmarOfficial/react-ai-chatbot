@@ -14,7 +14,7 @@ describe("Header Integration", () => {
         document.documentElement.className = "";
     });
 
-    it("should integrate with ThemeContext to toggle classes", () => {
+    it("should integrate with ThemeContext to toggle classes using test IDs", () => {
         render(
             <ChatProvider>
                 <ThemeProvider>
@@ -25,13 +25,13 @@ describe("Header Integration", () => {
 
         expect(document.documentElement.classList.contains("dark")).toBe(true);
 
-        const themeBtn = screen.getByTitle(/Current theme:/i);
+        const themeBtn = screen.getByTestId("theme-toggle-btn");
         fireEvent.click(themeBtn);
 
         expect(document.documentElement.classList.contains("light")).toBe(true);
     });
 
-    it("should integrate with ChatContext to change models", () => {
+    it("should integrate with ChatContext to change models using test IDs", () => {
         render(
             <ChatProvider>
                 <ThemeProvider>
@@ -40,10 +40,10 @@ describe("Header Integration", () => {
             </ChatProvider>
         );
 
-        const modelSelectorTrigger = screen.getByText("Llama 3.3 (Groq)");
+        const modelSelectorTrigger = screen.getByTestId("model-selector-btn");
         fireEvent.click(modelSelectorTrigger);
 
-        const newModelOption = screen.getByRole("button", { name: "Gemini 2.5" });
+        const newModelOption = screen.getByTestId("model-option-Gemini 2.5");
         fireEvent.click(newModelOption);
 
         expect(screen.getAllByText("Gemini 2.5").length).toBeGreaterThan(0);

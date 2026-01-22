@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode, useCallback, useMemo, useEffect } from "react";
+import { createContext, useContext, useState, type ReactNode, useCallback, useMemo, useEffect, useRef } from "react";
 import { type AiAssistant } from "../interfaces/ai";
 import { GoogleAiAssistant } from "../assistants/googleAi";
 import { GroqAiAssistant } from "../assistants/groqAi";
@@ -14,6 +14,7 @@ const assistants: Record<string, AiAssistant> = {
     "GPT 5": new OpenAiAssistant(),
     "Grok 4": new XAiAssistant(),
 };
+// Bug: with this code the chat sessions is 3 at first time
 
 export type Message = {
     role: "user" | "assistant";
@@ -54,10 +55,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [currentModel, setCurrentModel] = useState<string>("Llama 3.3 (Groq)");
 
-    useEffect(() => {
-        localStorage.setItem("chat_sessions", JSON.stringify(sessions));
-    }, [sessions]);
-
     const generateId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
 
     const createNewChat = useCallback(() => {
@@ -74,6 +71,28 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         setMessages([]);
         setIsTyping(false);
     }, []);
+
+    const isInitialized = useRef(false);
+
+    useEffect(() => {
+        if (isInitialized.current) return;
+
+        if (currentSessionId) {
+            isInitialized.current = true;
+            return;
+        }
+
+        if (sessions.length > 0) {
+            const mostRecent = sessions[0];
+            setCurrentSessionId(mostRecent.id);
+            setMessages(mostRecent.messages);
+            isInitialized.current = true;
+        } else {
+            createNewChat();
+            isInitialized.current = true;
+        }
+    }, [sessions, currentSessionId, createNewChat]);
+
 
     useEffect(() => {
         if (currentSessionId) return;

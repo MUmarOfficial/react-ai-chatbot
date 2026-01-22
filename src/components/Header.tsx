@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ChevronDown, Check, Sun, Moon, Menu } from "lucide-react";
 import { useChat } from "../context/ChatContext";
 import { useTheme } from "../context/ThemeContext";
@@ -20,18 +20,21 @@ const Header = ({ onMenuClick }: HeaderProps) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        if (!isOpen) return;
+
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
             }
         };
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+    }, [isOpen]);
 
-    const toggleTheme = () => {
+    const toggleTheme = useCallback(() => {
         setTheme(theme === 'light' ? 'dark' : 'light');
-    };
+    }, [theme, setTheme]);
 
     return (
         <header className={styles.header}>
@@ -46,32 +49,34 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                     <Menu className="size-6" />
                 </button>
 
-                {
-                    innerWidth > 640 && (
-                        <div className={`${styles.logoGroup}`} data-testid="header-logo-group">
-                            <div className={styles.iconWrapper}>
-                                <div className={styles.iconGlow} />
-                                <div className={styles.iconContainer}>
-                                    <img src="/chatbotLogo.png" alt="Chatbot Logo" />
-                                </div>
-                            </div>
-                            <span className={styles.title}>
-                                AI Chatbot
-                            </span>
+                <div className={styles.logoGroup} data-testid="header-logo-group">
+                    <div className={styles.iconWrapper}>
+                        <div className={styles.iconGlow} />
+                        <div className={styles.iconContainer}>
+                            <img src="/chatbotLogo.png" alt="Chatbot Logo" />
                         </div>
-                    )
-                }
-
+                    </div>
+                    <span className={styles.title}>AI Chatbot</span>
+                </div>
             </div>
 
             <div className={styles.controlsGroup}>
-                <button onClick={toggleTheme} className={styles.themeToggle} title={`Current theme: ${theme}`} data-testid="theme-toggle-btn">
+                <button
+                    onClick={toggleTheme}
+                    className={styles.themeToggle}
+                    title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                    data-testid="theme-toggle-btn"
+                >
                     <ThemeIcon theme={theme} />
                 </button>
 
                 <div className={styles.modelSelector} ref={dropdownRef}>
                     <button
+                        type="button"
                         onClick={() => setIsOpen(!isOpen)}
+                        aria-haspopup="true"
+                        aria-expanded={isOpen}
+                        aria-controls="model-dropdown-list"
                         className={`${styles.modelBtn} ${isOpen ? styles.modelBtnActive : ''}`}
                         data-testid="model-selector-btn"
                     >
@@ -89,16 +94,22 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                                 initial={{ opacity: 0, y: 8, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                                transition={{ duration: 0.15, ease: "easeOut" }}
+                                transition={{ duration: 0.1 }}
                                 className={styles.dropdownMenu}
                                 data-testid="model-dropdown"
                             >
-                                <div className={styles.dropdownContent}>
+                                <div
+                                    id="model-dropdown-list"
+                                    className={styles.dropdownContent}
+                                    role="menu"
+                                >
                                     {availableModels.map((model) => {
                                         const isActive = currentModel === model;
                                         return (
                                             <button
                                                 key={model}
+                                                type="button"
+                                                role="menuitem"
                                                 data-testid={`model-option-${model}`}
                                                 onClick={() => {
                                                     setModel(model);

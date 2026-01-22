@@ -26,19 +26,19 @@ describe("Header Component", () => {
         });
     });
 
-    it("toggles theme correctly", () => {
+    it("toggles theme correctly using test ID", () => {
         const setThemeMock = vi.fn();
         mockUseTheme.mockReturnValue({ theme: "light", setTheme: setThemeMock });
 
         render(<Header />);
 
-        const themeBtn = screen.getByRole("button", { name: /current theme: light/i });
+        const themeBtn = screen.getByTestId("theme-toggle-btn");
         fireEvent.click(themeBtn);
 
         expect(setThemeMock).toHaveBeenCalledWith("dark");
     });
 
-    it("changes model via dropdown", () => {
+    it("changes model via dropdown using test IDs", () => {
         const setModelMock = vi.fn();
         mockUseChat.mockReturnValue({
             currentModel: "Llama 3.3 (Groq)",
@@ -48,10 +48,10 @@ describe("Header Component", () => {
 
         render(<Header />);
 
-        const trigger = screen.getByText("Llama 3.3 (Groq)");
+        const trigger = screen.getByTestId("model-selector-btn");
         fireEvent.click(trigger);
 
-        const option = screen.getByText("GPT 5");
+        const option = screen.getByTestId("model-option-GPT 5");
         fireEvent.click(option);
 
         expect(setModelMock).toHaveBeenCalledWith("GPT 5");
