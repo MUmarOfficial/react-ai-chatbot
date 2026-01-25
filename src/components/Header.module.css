@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 .header {
-  @apply shrink-0 py-4 px-6 flex items-center justify-between backdrop-blur-md transition-colors duration-300 rounded-2xl;
+  @apply shrink-0 py-4 px-6 flex z-50 items-center justify-between backdrop-blur-md transition-colors duration-300 rounded-2xl;
   background-color: color-mix(in srgb, var(--bg-panel), transparent 30%);
 }
 
