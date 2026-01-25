@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, type ReactNode, useCallback, useMemo, useEffect, useRef } from "react";
+import LZString from "lz-string";
+import { DataConsentModal } from "../components/DataConsentModal";
 import { type AiAssistant } from "../interfaces/ai";
 import { GoogleAiAssistant } from "../assistants/googleAi";
 import { GroqAiAssistant } from "../assistants/groqAi";
@@ -14,7 +16,6 @@ const assistants: Record<string, AiAssistant> = {
     "GPT 5": new OpenAiAssistant(),
     "Grok 4": new XAiAssistant(),
 };
-// Bug: with this code the chat sessions is 3 at first time
 
 export type Message = {
     role: "user" | "assistant";
@@ -44,11 +45,20 @@ type ChatContextType = {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
+const getUpdatedSession = (session: ChatSession, newMessages: Message[]): ChatSession => {
+    if (session.messages.length === 0 && newMessages.length > 0 && session.title === "New Chat") {
+        const firstUserMsg = newMessages.find(m => m.role === "user");
+        if (firstUserMsg) {
+            const title = firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? "..." : "");
+            return { ...session, messages: newMessages, title };
+        }
+    }
+    return { ...session, messages: newMessages };
+};
+
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
-    const [sessions, setSessions] = useState<ChatSession[]>(() => {
-        const saved = localStorage.getItem("chat_sessions");
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [sessions, setSessions] = useState<ChatSession[]>([]);
+    const [hasConsented, setHasConsented] = useState<boolean | null>(null);
 
     const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -77,34 +87,62 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         if (isInitialized.current) return;
 
-        if (currentSessionId) {
-            isInitialized.current = true;
-            return;
+        const storedConsent = localStorage.getItem("chat_consent");
+        const loadSessions = () => {
+            const saved = localStorage.getItem("chat_sessions");
+            if (saved) {
+                try {
+                    const decompressed = LZString.decompressFromUTF16(saved);
+                    const parsed = decompressed ? JSON.parse(decompressed) : [];
+                    setSessions(parsed);
+                    if (parsed.length > 0) {
+                        setCurrentSessionId(parsed[0].id);
+                        setMessages(parsed[0].messages);
+                    } else {
+                        createNewChat();
+                    }
+                } catch (e) {
+                    console.error("Failed to load sessions", e);
+                    createNewChat();
+                }
+            } else {
+                createNewChat();
+            }
+        };
+
+        if (storedConsent === "true") {
+            setHasConsented(true);
+            loadSessions();
+        } else if (storedConsent === "false") {
+            setHasConsented(false);
+            createNewChat();
+        } else {
+            setHasConsented(null);
+            createNewChat();
         }
 
-        if (sessions.length > 0) {
-            const mostRecent = sessions[0];
-            setCurrentSessionId(mostRecent.id);
-            setMessages(mostRecent.messages);
-            isInitialized.current = true;
-        } else {
-            createNewChat();
-            isInitialized.current = true;
-        }
-    }, [sessions, currentSessionId, createNewChat]);
+        isInitialized.current = true;
+    }, [createNewChat]);
 
 
     useEffect(() => {
-        if (currentSessionId) return;
-
-        if (sessions.length > 0) {
-            const mostRecent = sessions[0];
-            setCurrentSessionId(mostRecent.id);
-            setMessages(mostRecent.messages);
-        } else {
-            createNewChat();
+        if (hasConsented === true && sessions.length > 0) {
+            const compressed = LZString.compressToUTF16(JSON.stringify(sessions));
+            localStorage.setItem("chat_sessions", compressed);
         }
-    }, [sessions, currentSessionId, createNewChat]);
+    }, [sessions, hasConsented]);
+
+    const handleConsent = (consent: boolean) => {
+        setHasConsented(consent);
+        localStorage.setItem("chat_consent", String(consent));
+
+        if (consent) {
+            const compressed = LZString.compressToUTF16(JSON.stringify(sessions));
+            localStorage.setItem("chat_sessions", compressed);
+        } else {
+            localStorage.removeItem("chat_sessions");
+        }
+    };
 
     const switchSession = useCallback((id: string) => {
         const session = sessions.find(s => s.id === id);
@@ -135,20 +173,11 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         });
     }, [currentSessionId, createNewChat]);
 
-    const updateSessionStorage = (sessionId: string, newMessages: Message[]) => {
-        setSessions(prev => prev.map(session => {
-            if (session.id !== sessionId) return session;
-
-            let title = session.title;
-            if (session.messages.length === 0 && newMessages.length > 0 && title === "New Chat") {
-                const firstUserMsg = newMessages.find(m => m.role === "user");
-                if (firstUserMsg) {
-                    title = firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? "..." : "");
-                }
-            }
-            return { ...session, messages: newMessages, title };
-        }));
-    };
+    const updateSessionStorage = useCallback((sessionId: string, newMessages: Message[]) => {
+        setSessions(prev => prev.map(session =>
+            session.id === sessionId ? getUpdatedSession(session, newMessages) : session
+        ));
+    }, []);
 
     const appendChunkToMessages = (prevMessages: Message[], chunk: string): Message[] => {
         const newMsgs = [...prevMessages];
@@ -202,7 +231,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setIsTyping(false);
         }
-    }, [currentModel, currentSessionId, messages]);
+    }, [currentModel, currentSessionId, messages, updateSessionStorage]);
 
     const value = useMemo(() => ({
         messages,
@@ -221,6 +250,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     return (
         <ChatContext.Provider value={value}>
             {children}
+            {hasConsented === null && <DataConsentModal onConsent={handleConsent} />}
         </ChatContext.Provider>
     );
 };
